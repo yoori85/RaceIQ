@@ -4,6 +4,7 @@ import type { LocalGameCatalog } from "@raceiq/backend-core/games/types";
 
 const APP_MANIFEST = "appmanifest_211500.acf";
 const CATALOG_FILE = ["Game", "GameData", "General", "r3e-data.json"];
+const LIVERY_CDN = "https://game.raceroomracing.com/cdn/apex-production";
 
 function record(value: unknown): Record<string, unknown> | undefined {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
@@ -29,9 +30,15 @@ export function parseRaceRoomCatalog(contents: string): LocalGameCatalog {
   }
   const circuits = new Map(catalogEntries(root.tracks).map(({ id, name }) => [id, name]));
   const classes = new Map(catalogEntries(root.classes).map(({ id, name }) => [id, name]));
-  const cars = new Map(catalogEntries(root.cars).map(({ id: carId, name, entry }) => [
-    carId, { id: carId, name, category: classes.get(id(entry.Class) ?? "") ?? "" },
-  ]));
+  const liveries = record(root.liveries);
+  const cars = new Map(catalogEntries(root.cars).map(({ id: carId, name, entry }) => {
+    const defaultLivery = id(entry.DefaultLivery);
+    const livery = defaultLivery ? record(liveries?.[defaultLivery]) : undefined;
+    const imageUrl = defaultLivery && id(livery?.Car) === carId
+      ? `${LIVERY_CDN}/Livery:${defaultLivery}:small.webp`
+      : undefined;
+    return [carId, { id: carId, name, category: classes.get(id(entry.Class) ?? "") ?? "", imageUrl }] as const;
+  }));
   const tracks = new Map(catalogEntries(root.layouts).flatMap(({ id: layoutId, name, entry }) => {
     const circuit = circuits.get(id(entry.Track) ?? "");
     if (!circuit) return [];

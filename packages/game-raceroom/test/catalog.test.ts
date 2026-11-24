@@ -42,3 +42,19 @@ test("discovers RaceRoom on a secondary Steam library using escaped paths", () =
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("uses the default livery thumbnail only when the livery belongs to the car", () => {
+  const catalog = parseRaceRoomCatalog(JSON.stringify({
+    cars: {
+      valid: { Id: 10, Name: "Test Car", DefaultLivery: 20 },
+      wrongModel: { Id: 11, Name: "Other Car", DefaultLivery: 20 },
+      invalidId: { Id: 12, Name: "Third Car", DefaultLivery: "../20" },
+      missingLivery: { Id: 13, Name: "Fourth Car", DefaultLivery: 21 },
+    },
+    liveries: { "20": { Id: 20, Car: 10 } },
+    tracks: {},
+    layouts: {},
+  }));
+  expect(catalog.cars.get("10")?.imageUrl).toBe("https://game.raceroomracing.com/cdn/apex-production/Livery:20:small.webp");
+  for (const id of ["11", "12", "13"]) expect(catalog.cars.get(id)?.imageUrl).toBeUndefined();
+});

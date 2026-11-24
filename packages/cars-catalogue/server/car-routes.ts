@@ -110,7 +110,7 @@ export const carRoutes = new Hono()
     if (gameIdResult.data === "raceroom") {
       const local = tryGetServerGame("raceroom")?.getLocalCatalog?.();
       const cars = [...(local?.cars.values() ?? [])]
-        .map(car => ({ ...car, path: "", imageUrl: "" }))
+        .map(car => ({ ...car, path: "", imageUrl: car.imageUrl ?? "" }))
         .sort((left, right) => left.name.localeCompare(right.name));
       return c.json(cars);
     }

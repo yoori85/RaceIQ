@@ -120,7 +120,7 @@ export function CatalogCarCard({ car, gameId, unit, m }: { m: CarsCatalogueMessa
             src={car.imageUrl}
             alt={car.name}
             loading="lazy"
-            className={`relative h-full w-full object-center transition-transform duration-300 group-hover:scale-[1.02] ${gameId === "ams2" ? "object-contain" : "object-cover"}`}
+            className={`relative h-full w-full object-center transition-transform duration-300 group-hover:scale-[1.02] ${gameId === "iracing" ? "object-cover" : "object-contain"}`}
             onError={() => setImageFailed(true)}
           />
         )}
