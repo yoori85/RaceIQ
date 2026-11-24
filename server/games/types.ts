@@ -2,6 +2,11 @@ import type { GameAdapter } from "@raceiq/shared/games/types";
 import type { TelemetryPacket } from "@raceiq/shared/telemetry/types";
 import type { LapDetectorFactory } from "../lap-detection/types";
 import type { LapIndexPacket } from "@raceiq/shared/telemetry/lap-index";
+
+export interface LocalGameCatalog {
+  cars: ReadonlyMap<string, { id: string; name: string; category: string }>;
+  tracks: ReadonlyMap<string, { id: string; name: string; variant: string }>;
+}
 /** Server-only runtime behavior owned by each game implementation. */
 export interface ServerGameRuntimePolicy {
   /** Pit strategy behavior and history seeding strategy. */
@@ -29,6 +34,8 @@ export interface ServerGameRuntimePolicy {
 
 /** Server-only extensions for game adapters — parsing, AI prompts. */
 export interface ServerGameAdapter extends GameAdapter {
+  /** Optional catalog read locally from the simulator installation. */
+  getLocalCatalog?(): LocalGameCatalog | null;
   /** Runtime policy knobs for server-side packet processors. */
   runtime: ServerGameRuntimePolicy;
 

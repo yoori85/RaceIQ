@@ -39,7 +39,10 @@ export function filterCatalogCars(cars: IRacingCatalogCar[], search: string, fil
   ));
 }
 
-export function IRacingCars({ gameId = "iracing" }: { gameId?: "iracing" | "ams2" }) {
+const carCatalogLabels = { iracing: "iR", ams2: "AMS2", raceroom: "RaceRoom" } as const;
+type CarCatalogGame = keyof typeof carCatalogLabels;
+
+export function IRacingCars({ gameId = "iracing" }: { gameId?: CarCatalogGame }) {
   const { AppInput, SearchSelect, m, useUnits, loadIRacingCars } = useCarsCatalogueHost();
   const units = useUnits();
   const [search, setSearch] = useState("");
@@ -100,7 +103,7 @@ export function IRacingCars({ gameId = "iracing" }: { gameId?: "iracing" | "ams2
 }
 
 
-export function CatalogCarCard({ car, gameId, unit, m }: { m: CarsCatalogueMessages; car: IRacingCatalogCar; gameId: "iracing" | "ams2"; unit: "metric" | "imperial" }) {
+export function CatalogCarCard({ car, gameId, unit, m }: { m: CarsCatalogueMessages; car: IRacingCatalogCar; gameId: CarCatalogGame; unit: "metric" | "imperial" }) {
   const [imageFailed, setImageFailed] = useState(false);
   const hasImage = Boolean(car.imageUrl?.trim()) && !imageFailed;
   const specifications: string[] = [];
@@ -111,7 +114,7 @@ export function CatalogCarCard({ car, gameId, unit, m }: { m: CarsCatalogueMessa
   return (
     <article className="group self-start overflow-hidden rounded-lg border border-app-border/10 bg-app-surface-alt/20 transition-colors hover:border-app-border-hover/30">
       {hasImage && <div className="relative h-40 overflow-hidden bg-gradient-to-br from-app-text/10 via-app-surface-alt/20 to-app-bg/20">
-        <div className="absolute inset-0 flex items-center justify-center text-3xl font-black italic text-app-text/10">{gameId === "ams2" ? "AMS2" : "iR"}</div>
+        <div className="absolute inset-0 flex items-center justify-center text-3xl font-black italic text-app-text/10">{carCatalogLabels[gameId]}</div>
         {hasImage && (
           <img
             src={car.imageUrl}
@@ -130,7 +133,7 @@ export function CatalogCarCard({ car, gameId, unit, m }: { m: CarsCatalogueMessa
       </div>}
       <div className="p-3 space-y-2">
         {!hasImage && <div className="flex items-center justify-between gap-2">
-          <span className="text-app-caption font-bold text-app-text-muted">{gameId === "ams2" ? "AMS2" : "iR"}</span>
+          <span className="text-app-caption font-bold text-app-text-muted">{carCatalogLabels[gameId]}</span>
           <span className="catalog-category-badge rounded border px-2 py-0.5 text-app-caption font-bold" data-catalog-category={car.category}>{categoryLabel(m, car.category)}</span>
         </div>}
         <h2 className="text-sm font-semibold leading-tight text-app-text">{car.name}</h2>

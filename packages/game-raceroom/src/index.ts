@@ -4,10 +4,14 @@ import { LapDetector } from "@raceiq/backend-core/lap-detection/detector";
 import { raceroomAdapter } from "@raceiq/shared/games/raceroom";
 import { DEFAULT_LAP_DETECTOR_POLICY } from "@raceiq/telemetry-core/processor/lap-policy";
 import { isRaceRoomSessionEnd, raceroomParser } from "./frame";
+import { getRaceRoomCatalog } from "./catalog";
 
 export const raceroomServerAdapter: ServerGameAdapter = {
   ...raceroomAdapter,
   ...raceroomParser,
+  getLocalCatalog: getRaceRoomCatalog,
+  getCarName: id => getRaceRoomCatalog()?.cars.get(id)?.name ?? raceroomAdapter.getCarName(id),
+  getTrackName: id => getRaceRoomCatalog()?.tracks.get(id)?.name ?? raceroomAdapter.getTrackName(id),
   parserStateIsFrameLocal: true,
   isSessionEndFrame: isRaceRoomSessionEnd,
   processNames: ["RRRE64.exe", "RRRE.exe"],

@@ -11,6 +11,7 @@ import { getAllAccCars } from "@raceiq/game-acc-metadata/racing/cars/acc";
 import { getAllAcEvoCars } from "@raceiq/game-ac-evo-metadata/racing/cars/ac-evo";
 import { fmTrackCatalog } from "@raceiq/game-fm-2023-metadata/racing/tracks/catalogs/fm";
 import { hasAMS2CarIdentity, hasAMS2TrackIdentity } from "@raceiq/game-ams2-metadata/index";
+import { tryGetServerGame } from "@raceiq/backend-core/games/registry";
 
 export function isCatalogCarId(gameId: GameId, carId: string): boolean {
   switch (gameId) {
@@ -21,7 +22,7 @@ export function isCatalogCarId(gameId: GameId, carId: string): boolean {
     case "ac-evo": return getAllAcEvoCars().some((car) => car.id === carId);
     case "lmu": return lmuCarCatalog.some((car) => car.id === carId);
     case "ams2": return hasAMS2CarIdentity(carId);
-    default: return false;
+    default: return tryGetServerGame(gameId)?.getLocalCatalog?.()?.cars.has(carId) ?? false;
   }
 }
 
@@ -34,7 +35,7 @@ export function isCatalogTrackId(gameId: GameId, trackId: string): boolean {
     case "ac-evo": return getAcEvoTracks().has(trackId);
     case "lmu": return lmuTrackCatalog.some((track) => track.id === trackId);
     case "ams2": return hasAMS2TrackIdentity(trackId);
-    default: return false;
+    default: return tryGetServerGame(gameId)?.getLocalCatalog?.()?.tracks.has(trackId) ?? false;
   }
 }
 

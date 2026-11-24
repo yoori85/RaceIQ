@@ -89,6 +89,27 @@ export const trackCatalogRoutes = new Hono()
     async (c) => {
       const gameId = c.req.query("gameId");
 
+      if (gameId === "raceroom") {
+        const local = tryGetServerGame(gameId)?.getLocalCatalog?.();
+        const [lapCounts, discovered] = await Promise.all([
+          getLapCountsByTrack(gameId),
+          listDiscoveredTracks(gameId),
+        ]);
+        const layouts = new Map(local?.tracks);
+        for (const track of discovered) {
+          if (!layouts.has(track.trackId)) layouts.set(track.trackId, { id: track.trackId, name: track.name, variant: "" });
+        }
+        return c.json([...layouts.values()].map(track => {
+          const hasOutline = hasRecordedOutlineById(track.id, gameId);
+          return {
+            ...track, location: "", country: "",
+            lengthKm: (getTrackLengthMetersById(track.id, gameId) ?? 0) / 1000,
+            hasOutline, outlineSource: hasOutline ? "generated" : null,
+            createdAt: null, lapCount: lapCounts.get(track.id) ?? 0,
+          };
+        }).sort((left, right) => left.name.localeCompare(right.name)));
+      }
+
       if (gameId === "f1-2025") {
         const f1Tracks = getF1Tracks();
         const lapCounts = await getLapCountsByTrack("f1-2025");

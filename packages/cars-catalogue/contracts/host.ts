@@ -119,7 +119,7 @@ export interface CarsCatalogueHost {
   loadCars: (gameId: GameId) => Promise<Car[]>;
   loadAccCars: () => Promise<AccCatalogueCar[]>;
   loadAcEvoCars: () => Promise<AcEvoCatalogueCar[]>;
-  loadIRacingCars: (gameId?: "iracing" | "ams2") => Promise<IRacingCatalogueCar[]>;
+  loadIRacingCars: (gameId?: "iracing" | "ams2" | "raceroom") => Promise<IRacingCatalogueCar[]>;
   loadLMUCars: () => Promise<LMUCatalogueCar[]>;
   PiBadge: ComponentType<{ pi: number; showNumber?: boolean }>;
   AppInput: ComponentType<ComponentProps<"input">>;

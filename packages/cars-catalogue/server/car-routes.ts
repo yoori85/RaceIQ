@@ -107,6 +107,13 @@ export const carRoutes = new Hono()
         400,
       );
     }
+    if (gameIdResult.data === "raceroom") {
+      const local = tryGetServerGame("raceroom")?.getLocalCatalog?.();
+      const cars = [...(local?.cars.values() ?? [])]
+        .map(car => ({ ...car, path: "", imageUrl: "" }))
+        .sort((left, right) => left.name.localeCompare(right.name));
+      return c.json(cars);
+    }
     if (gameIdResult.data === "lmu") {
       const cars = lmuCarCatalog.map((car) => ({
         id: car.id,
