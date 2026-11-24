@@ -82,6 +82,7 @@ function pitState(packet: TelemetryPacket): boolean | undefined {
   if (packet.gameId === "iracing") return packet.iracing?.onPitRoad;
   if (packet.gameId === "lmu") return packet.lmu?.inPits;
   if (packet.gameId === "ams2") return packet.ams2?.inPits;
+  if (packet.gameId === "raceroom") return packet.raceroom?.inPits;
   if (packet.gameId === "f1-2025") {
     const active = packet.f1?.pitLaneTimerActive;
     return active === undefined ? undefined : active === 1;

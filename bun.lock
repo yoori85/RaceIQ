@@ -95,6 +95,7 @@
         "@raceiq/game-iracing-metadata": "workspace:*",
         "@raceiq/game-lmu": "workspace:*",
         "@raceiq/game-lmu-metadata": "workspace:*",
+        "@raceiq/game-raceroom": "workspace:*",
         "@raceiq/lap-replay": "workspace:*",
         "@raceiq/session-analyse": "workspace:*",
         "@raceiq/sessions-page": "workspace:*",
@@ -478,6 +479,14 @@
         "react-dom": "^19.3.0",
       },
     },
+    "packages/game-raceroom": {
+      "name": "@raceiq/game-raceroom",
+      "dependencies": {
+        "@raceiq/backend-core": "workspace:*",
+        "@raceiq/shared": "workspace:*",
+        "@raceiq/telemetry-core": "workspace:*",
+      },
+    },
     "packages/lap-replay": {
       "name": "@raceiq/lap-replay",
       "dependencies": {
@@ -602,6 +611,7 @@
         "@raceiq/game-fm-2023": "workspace:*",
         "@raceiq/game-iracing": "workspace:*",
         "@raceiq/game-lmu": "workspace:*",
+        "@raceiq/game-raceroom": "workspace:*",
         "@raceiq/shared": "workspace:*",
         "@raceiq/telemetry-core": "workspace:*",
       },
@@ -1493,6 +1503,8 @@
     "@raceiq/game-lmu-metadata": ["@raceiq/game-lmu-metadata@workspace:packages/game-lmu-metadata"],
 
     "@raceiq/game-lmu-tests": ["@raceiq/game-lmu-tests@workspace:packages/game-lmu/test"],
+
+    "@raceiq/game-raceroom": ["@raceiq/game-raceroom@workspace:packages/game-raceroom"],
 
     "@raceiq/lap-replay": ["@raceiq/lap-replay@workspace:packages/lap-replay"],
 

@@ -139,7 +139,7 @@ export async function buildTelemetryCatalog(): Promise<BuiltTelemetryCatalog> {
     typesSource,
     typesTree,
     "TelemetryPacket",
-  ).filter((field) => !["gameId", "f1", "acc", "iracing", "lmu", "ams2"].includes(field.name));
+  ).filter((field) => !["gameId", "f1", "acc", "iracing", "lmu", "ams2", "raceroom"].includes(field.name));
   const packetFieldNames = packetFields.map((field) => field.name);
   const packetSets = wheelFieldSets(packetFieldNames);
 
@@ -161,6 +161,7 @@ export async function buildTelemetryCatalog(): Promise<BuiltTelemetryCatalog> {
     iracing: [],
     lmu: [],
     ams2: [],
+    raceroom: [],
   };
   for (const set of packetSets) {
     const semantic = normalizedSemantic(set);
@@ -642,6 +643,7 @@ export async function buildTelemetryCatalog(): Promise<BuiltTelemetryCatalog> {
 
   for (const variable of variables.values()) {
     variable.games.ams2 ??= {kind: "unavailable", reason: "source-not-provided", description: "AMS2 stable shared-memory prefix does not provide this semantic."};
+    variable.games.raceroom ??= {kind: "unavailable", reason: "source-not-provided", description: "The RaceRoom player snapshot does not expose this semantic."};
   }
   for (const [semantic, path, unit] of [
     ["timing.track-length", "ams2.trackLengthM", "m"],
@@ -654,6 +656,17 @@ export async function buildTelemetryCatalog(): Promise<BuiltTelemetryCatalog> {
       // Other game extension paths are read via their own mappings; they are not packet fields.
       addSource(inventories, "ams2", {path, label: path, semanticId: semantic, unit, dataType: unit === "boolean" ? "boolean" : unit === "text" ? "string" : "number", description: "AMS2 recorded shared-memory extension", sourceKind: "extension", recordedByRaceIQ: true, retention: "exact"});
     }
+  }
+
+  for (const [semantic, path, unit, dataType] of [
+    ["timing.track-length", "raceroom.trackLengthM", "m", "number"],
+    ["race.on-pit-road", "raceroom.inPits", "boolean", "boolean"],
+    ["session.session-type", "raceroom.sessionType", "text", "string"],
+  ] as const) {
+    const variable = variables.get(semantic);
+    if (!variable) throw new Error(`Missing telemetry definition for ${semantic}`);
+    variable.games.raceroom = {kind: "direct", nativeUnit: unit, sources: [path], freshness: "continuous", description: "Recorded RaceRoom shared-memory value"};
+    addSource(inventories, "raceroom", {path, label: path, semanticId: semantic, unit, dataType, description: "RaceRoom recorded shared-memory extension", sourceKind: "extension", recordedByRaceIQ: true, retention: "exact"});
   }
 
   for (const group of groups.values()) {

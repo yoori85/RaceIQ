@@ -9,6 +9,7 @@
     "./core/csv": "./core/csv.ts",
     "./games/ids": "./games/ids.ts",
     "./games/metric-contracts": "./games/metric-contracts.ts",
+    "./games/raceroom": "./games/raceroom.ts",
     "./games/registry": "./games/registry.ts",
     "./games/telemetry": "./games/telemetry.ts",
     "./games/types": "./games/types.ts",

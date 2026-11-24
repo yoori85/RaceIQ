@@ -64,6 +64,7 @@ Check out the [screenshots](assets/screenshots/) to see it in action.
 | iRacing | High |
 | Le Mans Ultimate | High |
 | Automobilista 2 | High |
+| RaceRoom Racing Experience | Experimental |
 | F1 2025 | Medium |
 | Assetto Corsa Competizione | Medium |
 | Forza Motorsport 2023 | Low |
@@ -115,7 +116,9 @@ RaceIQ checks for new releases automatically and notifies you when one is availa
 **Game on Windows is recommended.** RaceIQ runs on the same PC as the game for two reasons:
 
 - **UDP reliability** — loopback delivery is lossless and low-latency, avoiding the packet loss and timing jitter of network routing.
-- **Native telemetry** — ACC and AC Evo use Windows shared memory, iRacing uses its SDK mapping, and LMU uses the built-in `LMU_Data` shared-memory interface.
+- **Native telemetry** — ACC and AC Evo use Windows shared memory, iRacing uses its SDK mapping, and LMU uses the built-in `LMU_Data` shared-memory interface. RaceRoom uses the read-only `$R3E` API 3.6 mapping.
+
+For RaceRoom, run RaceIQ on the same Windows PC, start a driving session, and open **Live**. RaceIQ detects the game process and reads player telemetry automatically. The adapter uses native car model and track layout IDs. See the [RaceRoom shared-memory API](https://github.com/kwstudios-sweden/r3e-api/tree/e57a72fcafd74fcb1b0e7b5ca38a1a0aa59d74cb).
 
 **Game on Console works.** Just make sure both your windows machine and console is wired ethernet.
 

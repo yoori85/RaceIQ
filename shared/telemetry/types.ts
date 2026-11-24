@@ -22,6 +22,7 @@ export interface TelemetryPacket {
   iracing?: IRacingExtendedData;
   lmu?: LMUExtendedData;
   ams2?: {carName: string; trackName: string; trackLengthM: number; lapDistanceM: number; sessionType: string; lapInvalidated: boolean; inPits: boolean};
+  raceroom?: { trackName: string; trackLengthM: number; lapDistanceM: number; sessionType: string; lapInvalidated: boolean; inPits: boolean };
   lmuContext?: LmuLiveContext;
   extendedRaceIQ?: RaceIQExtendedData;
 

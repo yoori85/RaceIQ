@@ -20,6 +20,7 @@ import {
 } from "./live-readers";
 import { superviseSource } from "@raceiq/backend-core/runtime/source-supervisor";
 import { IS_WINDOWS } from "@raceiq/backend-core/runtime/platform/shell";
+import { RaceRoomTelemetrySource } from "@raceiq/game-raceroom/source";
 
 const SOURCE_POLL_MS = 2000;
 
@@ -33,6 +34,7 @@ export function startNativeSourceSupervisor(
 ): NativeSourceSupervisor {
 
   const pendingStops = new Set<Promise<void>>();
+  let raceroomSource: RaceRoomTelemetrySource | null = null;
   const trackStop = (stop: Promise<void> | null): void => {
     if (!stop) return;
     pendingStops.add(stop);
@@ -42,7 +44,7 @@ export function startNativeSourceSupervisor(
     );
   };
 
-  if (IS_WINDOWS) console.log(`[Supervisor] Watching for native telemetry games (acc, ac-evo, iracing, lmu${serverReleaseFeatures.ams2Adapter ? ", ams2" : ""}) — 2s poll`);
+  if (IS_WINDOWS) console.log(`[Supervisor] Watching for native telemetry games (acc, ac-evo, iracing, lmu, raceroom${serverReleaseFeatures.ams2Adapter ? ", ams2" : ""}) — 2s poll`);
   const pollTimer = IS_WINDOWS ? setInterval(() => {
     trackStop(superviseSource(
       isGameRunning("acc") || (dumpMode && recordingGameId === "acc"),
@@ -74,6 +76,10 @@ export function startNativeSourceSupervisor(
       getAms2Source, setAms2Source,
     ));
     trackStop(superviseSource(
+      isGameRunning("raceroom"), "RaceRoom", () => new RaceRoomTelemetrySource(),
+      () => raceroomSource, source => { raceroomSource = source; },
+    ));
+    trackStop(superviseSource(
       isGameRunning("lmu") || recordingGameId === "lmu",
       recordingGameId === "lmu" && !isGameRunning("lmu") ? "LMU recording" : "LMU",
       () => new LMUTelemetrySource({
@@ -93,12 +99,14 @@ export function startNativeSourceSupervisor(
         getIracingSource(),
         getLmuSource(),
         getAms2Source(),
+        raceroomSource,
       ];
       setAccReader(null);
       setAcEvoReader(null);
       setIracingSource(null);
       setLmuSource(null);
       setAms2Source(null);
+      raceroomSource = null;
       const stopped = await Promise.allSettled([
         ...pendingStops,
         ...readers.filter(reader => reader !== null).map(async reader => { await reader.stop(); }),

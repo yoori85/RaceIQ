@@ -23,6 +23,7 @@ import { Route as LmuRouteImport } from './routes/lmu'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OverlayRouteImport } from './routes/overlay'
+import { Route as GameidIndexRouteImport } from './routes/$gameid/index'
 import { Route as GameidCarsRouteImport } from './routes/$gameid/cars'
 import { Route as GameidChatsRouteImport } from './routes/$gameid/chats'
 import { Route as GameidCompareRouteImport } from './routes/$gameid/compare'
@@ -143,6 +144,11 @@ const OverlayRoute = OverlayRouteImport.update({
   id: '/overlay',
   path: '/overlay',
   getParentRoute: () => rootRouteImport,
+} as any)
+const GameidIndexRoute = GameidIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GameidRoute,
 } as any)
 const GameidCarsRoute = GameidCarsRouteImport.update({
   id: '/cars',
@@ -431,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/live/pit': typeof LivePitRoute
   '/portable/combo-1': typeof PortableCombo1Route
   '/portable/combo-2': typeof PortableCombo2Route
+  '/$gameid/': typeof GameidIndexRoute
   '/ac-evo/': typeof AcEvoIndexRoute
   '/acc/': typeof AccIndexRoute
   '/ams2/': typeof Ams2IndexRoute
@@ -468,7 +475,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$gameid': typeof GameidRouteWithChildren
   '/dev': typeof DevRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
@@ -481,6 +487,7 @@ export interface FileRoutesByTo {
   '/live/pit': typeof LivePitRoute
   '/portable/combo-1': typeof PortableCombo1Route
   '/portable/combo-2': typeof PortableCombo2Route
+  '/$gameid': typeof GameidIndexRoute
   '/ac-evo': typeof AcEvoIndexRoute
   '/acc': typeof AccIndexRoute
   '/ams2': typeof Ams2IndexRoute
@@ -548,6 +555,7 @@ export interface FileRoutesById {
   '/live/pit': typeof LivePitRoute
   '/portable/combo-1': typeof PortableCombo1Route
   '/portable/combo-2': typeof PortableCombo2Route
+  '/$gameid/': typeof GameidIndexRoute
   '/ac-evo/': typeof AcEvoIndexRoute
   '/acc/': typeof AccIndexRoute
   '/ams2/': typeof Ams2IndexRoute
@@ -616,6 +624,7 @@ export interface FileRouteTypes {
     | '/live/pit'
     | '/portable/combo-1'
     | '/portable/combo-2'
+    | '/$gameid/'
     | '/ac-evo/'
     | '/acc/'
     | '/ams2/'
@@ -653,7 +662,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/$gameid'
     | '/dev'
     | '/login'
     | '/onboarding'
@@ -666,6 +674,7 @@ export interface FileRouteTypes {
     | '/live/pit'
     | '/portable/combo-1'
     | '/portable/combo-2'
+    | '/$gameid'
     | '/ac-evo'
     | '/acc'
     | '/ams2'
@@ -732,6 +741,7 @@ export interface FileRouteTypes {
     | '/live/pit'
     | '/portable/combo-1'
     | '/portable/combo-2'
+    | '/$gameid/'
     | '/ac-evo/'
     | '/acc/'
     | '/ams2/'
@@ -887,6 +897,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/overlay'
       preLoaderRoute: typeof OverlayRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/$gameid/': {
+      id: '/$gameid/'
+      path: '/'
+      fullPath: '/$gameid/'
+      preLoaderRoute: typeof GameidIndexRouteImport
+      parentRoute: typeof GameidRoute
     }
     '/$gameid/cars': {
       id: '/$gameid/cars'
@@ -1301,6 +1318,7 @@ interface GameidRouteChildren {
   GameidRawRoute: typeof GameidRawRoute
   GameidSessionsRoute: typeof GameidSessionsRouteWithChildren
   GameidTracksRoute: typeof GameidTracksRouteWithChildren
+  GameidIndexRoute: typeof GameidIndexRoute
 }
 
 const GameidRouteChildren: GameidRouteChildren = {
@@ -1312,6 +1330,7 @@ const GameidRouteChildren: GameidRouteChildren = {
   GameidRawRoute: GameidRawRoute,
   GameidSessionsRoute: GameidSessionsRouteWithChildren,
   GameidTracksRoute: GameidTracksRouteWithChildren,
+  GameidIndexRoute: GameidIndexRoute,
 }
 
 const GameidRouteWithChildren =

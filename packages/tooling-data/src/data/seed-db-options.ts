@@ -31,6 +31,7 @@ export const FIXTURES: Record<GameId, string[]> = {
   iracing: ["test/artifacts/sessions/iracing-road-america-gt3.bin.gz"],
   ams2: ["test/artifacts/sessions/ams2-race-pit-stop.bin.gz"],
   lmu: [...LMU_MULTIPLAYER_FIXTURE_PARTS],
+  raceroom: [],
 };
 
 export type SeedOptions = {

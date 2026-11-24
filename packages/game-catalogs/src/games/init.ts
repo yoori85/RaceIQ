@@ -7,6 +7,7 @@ import { acEvoAdapter } from "@raceiq/game-ac-evo-metadata/index";
 import { iracingAdapter } from "@raceiq/game-iracing-metadata/index";
 import { ams2Adapter } from "@raceiq/game-ams2-metadata/index";
 import { lmuAdapter } from "@raceiq/game-lmu-metadata/index";
+import { raceroomAdapter } from "@raceiq/shared/games/raceroom";
 
 export function gameAdaptersForFeatures(
   flags: ReleaseFeatureFlags = releaseFeatureFlags({
@@ -19,6 +20,7 @@ export function gameAdaptersForFeatures(
   if (flags.iracingAdapter) adapters.push(iracingAdapter);
   adapters.push(lmuAdapter);
   if (flags.ams2Adapter) adapters.push(ams2Adapter);
+  adapters.push(raceroomAdapter);
   return adapters;
 }
 

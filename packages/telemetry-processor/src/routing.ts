@@ -7,6 +7,7 @@ import { forzaParser } from "@raceiq/game-fm-2023/game-parser";
 import { f1Parser } from "@raceiq/game-f1-2025/game-parser";
 import { iracingParser } from "@raceiq/game-iracing/game-parser";
 import { lmuParser } from "@raceiq/game-lmu/game-parser";
+import { raceroomParser } from "@raceiq/game-raceroom/frame";
 
 /** Select parser explicitly by game; parser-owned state remains caller-owned. */
 export function getGameParser(gameId: GameId): TelemetryParser<any> {
@@ -18,5 +19,6 @@ export function getGameParser(gameId: GameId): TelemetryParser<any> {
     case "f1-2025": return f1Parser;
     case "iracing": return iracingParser;
     case "lmu": return lmuParser;
+    case "raceroom": return raceroomParser;
   }
 }

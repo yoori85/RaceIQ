@@ -20,6 +20,7 @@ import type {
 import { SETUP_GROUP_DEFINITIONS } from "@raceiq/shared/racing/setups/catalog/groups";
 import ams2Sources from "../../../game-ams2/src/packet-sources.json";
 const SOURCE_ROOTS: Partial<Record<GameId, Record<string, string>>> = {
+  raceroom: { R3E: "RaceRoom.SharedMemory" },
   "f1-2025": {
     m: "F1.Motion",
     ct: "F1.CarTelemetry",
@@ -66,6 +67,11 @@ const PACKET_SOURCE_OVERRIDES: Partial<
   Record<GameId, Record<string, string[]>>
 > = {
   ams2: AMS2_PACKET_SOURCES,
+  raceroom: {
+    IsRaceOn: ["RaceRoom.SharedMemory.paused", "RaceRoom.SharedMemory.menus", "RaceRoom.SharedMemory.replay", "RaceRoom.SharedMemory.garage", "RaceRoom.SharedMemory.controlType"],
+    TimestampMS: ["RaceIQ.SystemClock"],
+    sessionUID: ["RaceIQ.SourceEpoch", "RaceRoom.SharedMemory.eventIndex", "RaceRoom.SharedMemory.sessionType", "RaceRoom.SharedMemory.sessionIteration", "RaceRoom.SharedMemory.layoutId", "RaceRoom.SharedMemory.modelId"],
+  },
   "f1-2025": {
     carId: ["F1.Participants.player.teamId"],
     NumCylinders: ["RaceIQ.ParserConstant.NumCylinders"],
@@ -486,6 +492,15 @@ function packetNativeMetadata(
   key: string,
   canonicalUnit: string,
 ): { nativeUnit: string; normalization?: string } {
+  if (gameId === "raceroom") {
+    if (key === "TirePressure") return { nativeUnit: "kPa", normalization: "kilopascals / 6.894757" };
+    if (key === "CurrentEngineRpm" || key === "EngineMaxRpm") return { nativeUnit: "rad/s", normalization: "radians per second * 30 / π" };
+    if (["Accel", "Brake", "Clutch", "Steer"].includes(key)) return {
+      nativeUnit: "ratio",
+      normalization: key === "Steer" ? "clamp to -1..1, multiply by 127 and round" : "clamp to 0..1, multiply by 255 and round",
+    };
+    if (key === "carId" || key === "trackId") return { nativeUnit: "integer", normalization: "native model or layout ID represented as text" };
+  }
   if (gameId === "ams2") {
     if (key === "TirePressure") return { nativeUnit: "kPa", normalization: "kilopascals / 6.894757" };
     if (["Accel", "Brake", "Clutch", "Steer"].includes(key)) return {

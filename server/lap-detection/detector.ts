@@ -276,7 +276,7 @@ export class LapDetector implements ILapDetector, LapOwnershipSource {
 
   private async startNewSession(packet: TelemetryPacket): Promise<SessionState | null> {
     const gameId = packet.gameId;
-    const sessionType = packet.f1?.sessionType ?? packet.lmu?.sessionType ?? packet.ams2?.sessionType;
+    const sessionType = packet.f1?.sessionType ?? packet.lmu?.sessionType ?? packet.ams2?.sessionType ?? packet.raceroom?.sessionType;
     const carId = packet.carId;
     const trackId = packet.trackId;
     let sessionId: number;

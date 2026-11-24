@@ -1,0 +1,18 @@
+{
+  "name": "@raceiq/game-raceroom",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./frame": "./src/frame.ts",
+    "./source": "./src/source.ts"
+  },
+  "dependencies": {
+    "@raceiq/backend-core": "workspace:*",
+    "@raceiq/shared": "workspace:*",
+    "@raceiq/telemetry-core": "workspace:*"
+  },
+  "scripts": {
+    "typecheck": "bun check --project tsconfig.json"
+  }
+}

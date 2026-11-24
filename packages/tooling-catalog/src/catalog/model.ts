@@ -24,6 +24,7 @@ const GAME_IDS = [
   "iracing",
   "lmu",
   "ams2",
+  "raceroom",
 ] as const;
 type GameId = (typeof GAME_IDS)[number];
 
@@ -307,6 +308,7 @@ const PARSER_FILES: Record<GameId, string> = {
   iracing: "packages/game-iracing/src/normalizer.ts",
   lmu: "packages/game-lmu/src/normalizer.ts",
   ams2: "packages/game-ams2/src/normalizer.ts",
+  raceroom: "packages/game-raceroom/src/frame.ts",
 };
 export {
   IRACING_SESSION_INFO_SOURCE_FILES,

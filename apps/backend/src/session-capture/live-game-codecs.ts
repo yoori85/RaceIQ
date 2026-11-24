@@ -11,6 +11,7 @@ import { captureIRacingParserCheckpoint, createIRacingParserState, restoreIRacin
 import { iracingParser } from "@raceiq/game-iracing/game-parser";
 import { ams2Parser, type AMS2ParserState } from "@raceiq/game-ams2/game-parser";
 import { lmuParser } from "@raceiq/game-lmu/game-parser";
+import { parseRaceRoomFrame } from "@raceiq/game-raceroom/frame";
 
 import { acEvoParser } from "@raceiq/game-ac-evo/game-parser";
 export interface LiveGameParserCodec {
@@ -175,6 +176,8 @@ export function createLiveGameParserCodec(gameId: GameId): LiveGameParserCodec {
       };
     case "lmu":
       return frameLocalCodec((frame, timestampMs) => lmuParser.tryParse(frame, null, timestampMs));
+    case "raceroom":
+      return frameLocalCodec(parseRaceRoomFrame);
   }
 }
 

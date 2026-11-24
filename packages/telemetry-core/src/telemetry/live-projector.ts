@@ -34,7 +34,7 @@ export class LiveTelemetryProjector {
       : gameId === "lmu" && input.packet.lmuContext?.key.frameTime.domain === "session"
         ? input.packet.lmuContext.key.frameTime.milliseconds
         : Number.isFinite(input.packet.TimestampMS) ? input.packet.TimestampMS : input.receivedAtMs;
-    const timestampDomain = gameId === "acc" || gameId === "ac-evo" ? "wall-clock" as const : "session" as const;
+    const timestampDomain = gameId === "acc" || gameId === "ac-evo" || gameId === "raceroom" ? "wall-clock" as const : "session" as const;
     const observation = { timestamp: { domain: timestampDomain, milliseconds: observedMs }, updateSequence: BigInt(this.sequence + 1) };
     this.view = resolver.createFrameView(input.packet, observation, this.view, gameId === "lmu" ? lmuSourceTimestamp : undefined);
     const resolved = this.view.resolveMany(liveSemanticIds(gameId).map((id) => resolver.slot(id))) as readonly ResolvedValue<unknown>[];

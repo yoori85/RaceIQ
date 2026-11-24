@@ -21,10 +21,10 @@ describe("release game registration", () => {
   test("includes iRacing, LMU, and AMS2 in development registries", () => {
     const flags = releaseFeatureFlags(developmentEnv);
     expect(ids(gameAdaptersForFeatures(flags))).toEqual(
-      expect.arrayContaining(["iracing", "lmu", "ams2"]),
+      expect.arrayContaining(["iracing", "lmu", "ams2", "raceroom"]),
     );
     expect(ids(serverGameAdaptersForFeatures(flags))).toEqual(
-      expect.arrayContaining(["iracing", "lmu", "ams2"]),
+      expect.arrayContaining(["iracing", "lmu", "ams2", "raceroom"]),
     );
   });
 
@@ -44,12 +44,14 @@ describe("release game registration", () => {
     expect(ids(serverGameAdaptersForFeatures(flags))).not.toContain("iracing");
     expect(ids(serverGameAdaptersForFeatures(flags))).not.toContain("ams2");
     expect(ids(serverGameAdaptersForFeatures(flags))).toContain("lmu");
+    expect(ids(gameAdaptersForFeatures(flags))).toContain("raceroom");
+    expect(ids(serverGameAdaptersForFeatures(flags))).toContain("raceroom");
     expect(ids(gameAdaptersForFeatures(flags))).toContain("f1-2025");
     expect(ids(serverGameAdaptersForFeatures(flags))).toContain("f1-2025");
   });
 
   test("lists native telemetry game ids by release environment", () => {
-    expect(nativeTelemetryGameIds(releaseFeatureFlags(developmentEnv))).toEqual(["acc", "ac-evo", "iracing", "lmu", "ams2"]);
-    expect(nativeTelemetryGameIds(releaseFeatureFlags(productionEnv))).toEqual(["acc", "ac-evo", "lmu"]);
+    expect(nativeTelemetryGameIds(releaseFeatureFlags(developmentEnv))).toEqual(["acc", "ac-evo", "iracing", "lmu", "ams2", "raceroom"]);
+    expect(nativeTelemetryGameIds(releaseFeatureFlags(productionEnv))).toEqual(["acc", "ac-evo", "lmu", "raceroom"]);
   });
 });
