@@ -120,7 +120,7 @@ RaceIQ checks for new releases automatically and notifies you when one is availa
 
 For RaceRoom, run RaceIQ on the same Windows PC, start a driving session, and open **Live**. RaceIQ detects the game process and reads player telemetry automatically. The adapter uses native car model and track layout IDs. See the [RaceRoom shared-memory API](https://github.com/kwstudios-sweden/r3e-api/tree/e57a72fcafd74fcb1b0e7b5ca38a1a0aa59d74cb).
 
-RaceIQ reads RaceRoom’s installed `r3e-data.json` to populate car names, classes, circuits, and layouts. Car thumbnails use each car’s default livery from RaceRoom’s CDN. Steam library discovery starts in the standard Windows Steam folders. For a custom Steam installation, set `RACEIQ_RACEROOM_CATALOG` to the full path of the JSON file and restart RaceIQ.
+RaceIQ reads RaceRoom’s installed `r3e-data.json` to populate car names, classes, circuits, and layouts. Car thumbnails use each model’s default livery. Track cards use the parent circuit’s artwork. Steam library discovery starts in the standard Windows Steam folders. For a custom Steam installation, set `RACEIQ_RACEROOM_CATALOG` to the full path of the JSON file and restart RaceIQ.
 
 **Game on Console works.** Just make sure both your windows machine and console is wired ethernet.
 

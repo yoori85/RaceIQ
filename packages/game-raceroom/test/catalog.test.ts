@@ -20,8 +20,8 @@ test("resolves model and layout IDs using the installation metadata", () => {
   }));
   expect([...catalog.cars.values()]).toEqual([{ id: "10", name: "Test Car", category: "GT3" }]);
   expect([...catalog.tracks.values()]).toEqual([
-    { id: "31", name: "Test Circuit – West", variant: "West" },
-    { id: "32", name: "Test Circuit – East", variant: "East" },
+    { id: "31", name: "Test Circuit – West", variant: "West", imageUrl: "https://fra1.digitaloceanspaces.com/apex-production/Track:30:image_1.webp" },
+    { id: "32", name: "Test Circuit – East", variant: "East", imageUrl: "https://fra1.digitaloceanspaces.com/apex-production/Track:30:image_1.webp" },
   ]);
   expect(() => parseRaceRoomCatalog('{"cars":{}}')).toThrow("Expected a RaceRoom car and layout catalog");
 });

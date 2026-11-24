@@ -78,7 +78,7 @@ export function TrackCardVisual({ track, map, setupCount, guideCount, gameLabel 
   );
 }
 
-/** TrackCard — Gallery thumbnail: fetches outline by native track ID and renders a small static track map. */
+/** TrackCard shows circuit artwork and falls back to the available track map. */
 export function TrackCard({
   track,
   onSelect,
@@ -99,14 +99,17 @@ export function TrackCard({
   const [outline, setOutline] = useState<Point[] | null>(null);
   const [pitLines, setPitLines] = useState<PitLine[]>([]);
   const [flipX, setFlipX] = useState(false);
+  const [failedImage, setFailedImage] = useState<string | null>(null);
+  const imageUrl = track.imageUrl && track.imageUrl !== failedImage ? track.imageUrl : null;
+  const loadOutline = track.hasOutline && !imageUrl;
 
   useEffect(() => {
-    if (!track.hasOutline || !cardRef.current) return;
+    if (!loadOutline || !cardRef.current) return;
     return observeTrackCardVisibility(cardRef.current, () => setOutlineVisible(true));
-  }, [track.hasOutline]);
+  }, [loadOutline]);
 
   useEffect(() => {
-    if (!track.hasOutline || !outlineVisible) return;
+    if (!loadOutline || !outlineVisible) return;
     operations.outline(track.id, gameId ?? undefined)
       .then((data) => {
         if (!Array.isArray(data) && data?.points && Array.isArray(data.points)) {
@@ -124,14 +127,16 @@ export function TrackCard({
         }
       })
       .catch(() => {});
-  }, [track.id, track.hasOutline, gameId, outlineVisible]);
+  }, [track.id, loadOutline, gameId, outlineVisible]);
 
   useEffect(() => {
     if (!outline || !canvasRef.current) return;
     drawTrack(canvasRef.current, outline, false, null, 1, { x: 0, z: 0 }, undefined, flipX, undefined, undefined, undefined, undefined, pitLines);
-  }, [outline, flipX, pitLines]);
+  }, [outline, flipX, pitLines, imageUrl]);
 
-  const map = outline ? (
+  const preview = imageUrl ? (
+    <img key={imageUrl} src={imageUrl} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" onError={() => setFailedImage(imageUrl)} />
+  ) : outline ? (
     <canvas ref={canvasRef} className="w-full h-full" />
   ) : track.mapUrl ? (
     gameId === "lmu" ? <InlineTrackMap src={track.mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })} className="w-full h-full p-3" /> : <img src={track.mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })} className="w-full h-full object-contain p-3" loading="lazy" decoding="async" />
@@ -147,7 +152,7 @@ export function TrackCard({
       className={`${TRACK_CARD_SHELL_CLASS} text-left cursor-pointer transition-all hover:border-app-border-hover hover:bg-app-surface-hover/50`}
       onClick={() => onSelect(track)}
     >
-      <TrackCardVisual track={track} map={map} setupCount={setupCount} guideCount={guideCount} />
+      <TrackCardVisual track={track} map={preview} setupCount={setupCount} guideCount={guideCount} />
     </Button>
   );
 }

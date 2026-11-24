@@ -5,7 +5,7 @@ import type { LapIndexPacket } from "@raceiq/shared/telemetry/lap-index";
 
 export interface LocalGameCatalog {
   cars: ReadonlyMap<string, { id: string; name: string; category: string; imageUrl?: string }>;
-  tracks: ReadonlyMap<string, { id: string; name: string; variant: string }>;
+  tracks: ReadonlyMap<string, { id: string; name: string; variant: string; imageUrl?: string }>;
 }
 /** Server-only runtime behavior owned by each game implementation. */
 export interface ServerGameRuntimePolicy {

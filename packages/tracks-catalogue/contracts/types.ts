@@ -10,6 +10,8 @@ export interface TrackInfo {
   hasMap?: boolean;
   /** Public static map for layouts without RaceIQ centerline points. */
   mapUrl?: string | null;
+  /** Gallery image for the circuit. */
+  imageUrl?: string | null;
   category?: string;
   cornersPerLap?: number | null;
   pitRoadSpeedLimitMph?: number | null;
