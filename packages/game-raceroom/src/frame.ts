@@ -4,7 +4,8 @@ import type { TelemetryPacket } from "@raceiq/shared/telemetry/types";
 // The prefix ends after BrakeTemp. The live source never reads the opponent array.
 export const RACEROOM_PREFIX_BYTES = 1920;
 const HEADER_BYTES = 16;
-const MAGIC = 0x36453352; // R3E6
+const LEGACY_MAGIC = 0x36453352; // R3E6
+const MAGIC = 0x54453352; // R3ET
 export const R3E = {
   paused: 20, menus: 24, replay: 28, garage: 36, ticks: 44, position: 56,
   localVelocity: 104, localAngularVelocity: 272, localGForce: 296, torque: 336,
@@ -15,7 +16,7 @@ export const R3E = {
   classId: 1264, modelId: 1268, controlType: 1388, speed: 1392,
   engineRadians: 1396, maxEngineRadians: 1400, gear: 1408, orientation: 1428,
   fuel: 1456, fuelCapacity: 1460, throttle: 1504, brake: 1512, clutch: 1520,
-  steer: 1524, tireRotation: 1632, tirePressure: 1712, brakeTemperature: 1856,
+  steer: 1524, tireRotation: 1632, tirePressure: 1712, tireTemperature: 1744, brakeTemperature: 1856,
 } as const;
 
 export function isRaceRoomMemory(memory: Buffer): boolean {
@@ -33,7 +34,9 @@ export function encodeRaceRoomFrame(memory: Buffer, time: number, epoch: number)
 }
 
 function frameMemory(frame: Buffer): Buffer | null {
-  if (frame.length !== HEADER_BYTES + RACEROOM_PREFIX_BYTES || frame.readUInt32LE(0) !== MAGIC) return null;
+  if (frame.length !== HEADER_BYTES + RACEROOM_PREFIX_BYTES) return null;
+  const magic = frame.readUInt32LE(0);
+  if (magic !== MAGIC && magic !== LEGACY_MAGIC) return null;
   const memory = frame.subarray(HEADER_BYTES);
   return isRaceRoomMemory(memory) ? memory : null;
 }
@@ -57,6 +60,9 @@ export function parseRaceRoomFrame(frame: Buffer): TelemetryPacket | null {
   const nonnegative = (value: number) => Math.max(0, finite(value));
   const pedal = (offset: number) => Math.round(Math.min(1, nonnegative(f(offset))) * 255);
   const optional = (value: number) => Number.isFinite(value) && value >= 0 ? value : undefined;
+  // Retain the original parser output for already-recorded R3E6 frames.
+  const hasTreadTemperatures = frame.readUInt32LE(0) === MAGIC;
+  const treadTemperature = (offset: number) => hasTreadTemperatures ? optional(f(offset)) : undefined;
   const completed = i(R3E.completedLaps);
   const trackLengthM = f(R3E.layoutLength);
   const lapDistanceM = f(R3E.lapDistance);
@@ -102,6 +108,19 @@ export function parseRaceRoomFrame(frame: Buffer): TelemetryPacket | null {
     WheelInPuddleDepthFL: 0, WheelInPuddleDepthFR: 0, WheelInPuddleDepthRL: 0, WheelInPuddleDepthRR: 0,
     SurfaceRumbleFL_2: 0, SurfaceRumbleFR_2: 0, SurfaceRumbleRL_2: 0, SurfaceRumbleRR_2: 0, TireSlipCombinedFL_2: 0,
     TireTempFL: 0, TireTempFR: 0, TireTempRL: 0, TireTempRR: 0,
+    // The API labels tread bands left/center/right in car coordinates.
+    TireSurfaceTempInnerFL: treadTemperature(R3E.tireTemperature + 8),
+    TireSurfaceTempInnerFR: treadTemperature(R3E.tireTemperature + 24),
+    TireSurfaceTempInnerRL: treadTemperature(R3E.tireTemperature + 56),
+    TireSurfaceTempInnerRR: treadTemperature(R3E.tireTemperature + 72),
+    TireSurfaceTempMiddleFL: treadTemperature(R3E.tireTemperature + 4),
+    TireSurfaceTempMiddleFR: treadTemperature(R3E.tireTemperature + 28),
+    TireSurfaceTempMiddleRL: treadTemperature(R3E.tireTemperature + 52),
+    TireSurfaceTempMiddleRR: treadTemperature(R3E.tireTemperature + 76),
+    TireSurfaceTempOuterFL: treadTemperature(R3E.tireTemperature),
+    TireSurfaceTempOuterFR: treadTemperature(R3E.tireTemperature + 32),
+    TireSurfaceTempOuterRL: treadTemperature(R3E.tireTemperature + 48),
+    TireSurfaceTempOuterRR: treadTemperature(R3E.tireTemperature + 80),
     TirePressureFrontLeft: pressure(R3E.tirePressure), TirePressureFrontRight: pressure(R3E.tirePressure + 4),
     TirePressureRearLeft: pressure(R3E.tirePressure + 8), TirePressureRearRight: pressure(R3E.tirePressure + 12),
     BrakeTempFrontLeft: optional(f(R3E.brakeTemperature)), BrakeTempFrontRight: optional(f(R3E.brakeTemperature + 16)),

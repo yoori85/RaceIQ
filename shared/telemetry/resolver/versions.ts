@@ -10,5 +10,5 @@ export const TELEMETRY_PARSER_VERSIONS: Readonly<Record<GameId, string>> = {
   iracing: "iracing-source-frame@3",
   lmu: "lmu-source-frame@1",
   ams2: "ams2-shared-memory@1",
-  raceroom: "raceroom-shared-memory@3.6.1",
+  raceroom: "raceroom-shared-memory@3.6.2",
 };

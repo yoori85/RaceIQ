@@ -6,7 +6,7 @@
     "generator": {
       "name": "RaceIQ telemetry-catalog generator",
       "version": "0.23.0",
-      "sourceHash": "f4004c971ff5e71c242ccea786c523948fdb7a9a887022f5467e8ab74d6701e2"
+      "sourceHash": "4d4437a77ba0d951c3f0d7bf02803d89ed9ef7905c568e0dfb99e126f0db9900"
     },
     "sourceHashes": {
       "packages/capture-formats/src/lmu/opponent-snapshot.ts": "c18e10f39668501f9c4742bec8999bc7faeeba2c8ea7b42d60accfbbe4e8f0c6",
@@ -18,12 +18,12 @@
       "packages/game-iracing-metadata/src/session-info/catalog.ts": "4d39b51587bf71a519991ff91a7781efd01190cd633c8e8ef3f4234fa6affb98",
       "packages/game-iracing/src/normalizer.ts": "bcc73bc4805a310f968b9743e6c9c88a688e3216cd28eecc3ee9f6c3d36b0afc",
       "packages/game-lmu/src/normalizer.ts": "dbd68de1aad791136103401c6502893502b2f52559fe3f4388892ee5103e4b8e",
-      "packages/game-raceroom/src/frame.ts": "9c19e698da71947289908ab7d0adf81abfc6c73b03076cfeed3d19e3adf928f6",
+      "packages/game-raceroom/src/frame.ts": "e6bb28e0cc5930f17e7db95df6db71fcac56fe9c03af8e3a26296df9a04348f0",
       "packages/tooling-catalog/src/catalog/derived-projections.ts": "87ce35e5a8ee19a1bebc21abe8a54705519f7ee9dfd853b1b01e6e187560dfba",
       "server/session-capture/frame-time.ts": "55c44a6cede5e2c5fb1e1c45568fe44b4a9a8b156f260f69bb5d89f9c24935a2",
       "shared/racing/setups/schema.ts": "987941bb8f38520920686ef540e67ce2259fdc962de03ccb959f6b5ef773b28f"
     },
-    "contentHash": "12e2a896338c30ae71b8573150e402cba7030914dbea8bbfd9cde6259462f954"
+    "contentHash": "75c69752054153cb2ba9161f3adfb2d2ad534d273df309df4d8fa2055644c38a"
   },
   "generatedFrom": [
     "packages/tooling-catalog/src/root.ts",
@@ -66961,9 +66961,29 @@
           "description": "ams2 parser fills this value with a placeholder because source does not provide it."
         },
         "raceroom": {
-          "kind": "unavailable",
-          "reason": "parser-placeholder",
-          "description": "raceroom parser fills this value with a placeholder because source does not provide it."
+          "kind": "direct",
+          "nativeUnit": "°C",
+          "sources": {
+            "FL": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "FR": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "RL": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "RR": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ]
+          },
+          "freshness": "continuous",
+          "description": "raceroom maps 1 native source channel into this value.",
+          "provenance": {
+            "origin": "parser",
+            "artifact": "packages/game-raceroom/src/frame.ts"
+          },
+          "limitations": []
         }
       },
       "valueType": "number",
@@ -67087,9 +67107,29 @@
           "description": "ams2 parser fills this value with a placeholder because source does not provide it."
         },
         "raceroom": {
-          "kind": "unavailable",
-          "reason": "parser-placeholder",
-          "description": "raceroom parser fills this value with a placeholder because source does not provide it."
+          "kind": "direct",
+          "nativeUnit": "°C",
+          "sources": {
+            "FL": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "FR": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "RL": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "RR": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ]
+          },
+          "freshness": "continuous",
+          "description": "raceroom maps 1 native source channel into this value.",
+          "provenance": {
+            "origin": "parser",
+            "artifact": "packages/game-raceroom/src/frame.ts"
+          },
+          "limitations": []
         }
       },
       "valueType": "number",
@@ -67213,9 +67253,29 @@
           "description": "ams2 parser fills this value with a placeholder because source does not provide it."
         },
         "raceroom": {
-          "kind": "unavailable",
-          "reason": "parser-placeholder",
-          "description": "raceroom parser fills this value with a placeholder because source does not provide it."
+          "kind": "direct",
+          "nativeUnit": "°C",
+          "sources": {
+            "FL": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "FR": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "RL": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ],
+            "RR": [
+              "RaceRoom.SharedMemory.tireTemperature"
+            ]
+          },
+          "freshness": "continuous",
+          "description": "raceroom maps 1 native source channel into this value.",
+          "provenance": {
+            "origin": "parser",
+            "artifact": "packages/game-raceroom/src/frame.ts"
+          },
+          "limitations": []
         }
       },
       "valueType": "number",
@@ -102828,6 +102888,150 @@
         "retention": "exact"
       },
       {
+        "path": "TelemetryPacket.TireSurfaceTempInnerFL",
+        "label": "Tire Surface Temp Inner FL",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Inner FL emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.inner",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempInnerFR",
+        "label": "Tire Surface Temp Inner FR",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Inner FR emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.inner",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempInnerRL",
+        "label": "Tire Surface Temp Inner RL",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Inner RL emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.inner",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempInnerRR",
+        "label": "Tire Surface Temp Inner RR",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Inner RR emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.inner",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempMiddleFL",
+        "label": "Tire Surface Temp Middle FL",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Middle FL emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.middle",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempMiddleFR",
+        "label": "Tire Surface Temp Middle FR",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Middle FR emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.middle",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempMiddleRL",
+        "label": "Tire Surface Temp Middle RL",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Middle RL emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.middle",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempMiddleRR",
+        "label": "Tire Surface Temp Middle RR",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Middle RR emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.middle",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempOuterFL",
+        "label": "Tire Surface Temp Outer FL",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Outer FL emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.outer",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempOuterFR",
+        "label": "Tire Surface Temp Outer FR",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Outer FR emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.outer",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempOuterRL",
+        "label": "Tire Surface Temp Outer RL",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Outer RL emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.outer",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
+        "path": "TelemetryPacket.TireSurfaceTempOuterRR",
+        "label": "Tire Surface Temp Outer RR",
+        "unit": "°C",
+        "dataType": "number",
+        "count": 1,
+        "description": "Tire Surface Temp Outer RR emitted by raceroom parser.",
+        "semanticId": "tire.temperature.surface.outer",
+        "sourceKind": "packet",
+        "recordedByRaceIQ": true,
+        "retention": "exact"
+      },
+      {
         "path": "TelemetryPacket.TireTempFL",
         "label": "Tire Temp FL",
         "unit": "°C",
@@ -103278,13 +103482,13 @@
         "recorded": 112
       },
       "raceroom": {
-        "total": 109,
-        "packet": 105,
+        "total": 121,
+        "packet": 117,
         "extension": 4,
         "sdk": 0,
         "yaml": 0,
         "setup": 0,
-        "recorded": 109
+        "recorded": 121
       }
     }
   }

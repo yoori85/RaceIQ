@@ -624,6 +624,7 @@ function classifyPacketMapping(
   native: { normalization?: string },
   expressions: readonly string[],
 ): AvailableLink["kind"] {
+  if (gameId === "raceroom" && key.startsWith("TireSurfaceTemp")) return "direct";
   if (
     (gameId === "acc" && key === "WeatherType") ||
     (gameId === "f1-2025" && key === "WheelRotationSpeed")

@@ -210,6 +210,7 @@ describe("analyzeLap deterministic signal guards", () => {
     const insight = find(analyzeLap(telemetry, "f1-2025"), "tire-pressure-imbalance");
     expect(insight).toBeDefined();
     expect(insight?.detail).toContain("front left tire averaged 2.5 psi higher");
+    expect(insight?.detail).toContain("Check the cold settings on that axle");
   });
 });
 

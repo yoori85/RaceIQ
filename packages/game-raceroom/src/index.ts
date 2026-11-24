@@ -25,5 +25,8 @@ export const raceroomServerAdapter: ServerGameAdapter = {
       invalidReason: packets => packets.some(packet => packet.raceroom?.lapInvalidated) ? "game-invalidated" : null,
     },
   }),
-  aiSystemPrompt: `You are a RaceRoom driving coach. Use only supplied telemetry. Return JSON matching: ${renderAnalystSchemaForPrompt()}`,
+  aiSystemPrompt: `You are a RaceRoom driving coach. Use only supplied telemetry.
+When the evidence shows a persistent hot-pressure difference, put a concrete setup test in coaching. Ask the driver to verify both cold settings, repeat clean laps with the baseline setup, and compare hot readings at the same point on track. Reserve setup entries for targets grounded in verified garage settings and adjustment ranges.
+Use the following JSON shape.
+${renderAnalystSchemaForPrompt()}`,
 };

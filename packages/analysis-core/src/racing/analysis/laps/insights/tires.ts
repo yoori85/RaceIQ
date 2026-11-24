@@ -319,7 +319,7 @@ export function createTireScan(
         if (Math.abs(delta) >= 1.5) pressureImbalance = {
           id: "tire-pressure-imbalance", category: "tires",
           severity: Math.abs(delta) >= 3 ? "critical" : "warning", label: "Tire Pressure Imbalance",
-          detail: `${axle === 0 ? "front" : "rear"} ${delta > 0 ? "left" : "right"} tire averaged ${Math.abs(delta).toFixed(1)} psi higher — compare pressure histories and cold settings`,
+          detail: `${axle === 0 ? "front" : "rear"} ${delta > 0 ? "left" : "right"} tire averaged ${Math.abs(delta).toFixed(1)} psi higher. Check the cold settings on that axle, then repeat two clean laps on the same setup. Compare hot pressures at the same point on track before testing a single adjustment.`,
           frameIndices: [prefixes[axle].peakIndex],
         };
       }

@@ -25,6 +25,9 @@ function drivingSnapshot() {
   memory.writeFloatLE(24, R3E.fuel);
   memory.writeFloatLE(101, R3E.lastLap);
   memory.writeFloatLE(-1, R3E.tirePressure);
+  for (const [index, value] of [60, 61, 62, 70, 71, 72, 80, 81, 82, 90, -1, 92].entries()) {
+    memory.writeFloatLE(value, R3E.tireTemperature + Math.floor(index / 3) * 24 + (index % 3) * 4);
+  }
   return memory;
 }
 
@@ -69,6 +72,20 @@ describe("RaceRoom 3.6 source frames", () => {
     expect(value("motion.speed")).toBe(50);
     expect(value("race.on-pit-road")).toBe(true);
     expect(value("timing.track-length")).toBe(4000);
+    expect(value("tire.temperature.surface.inner")).toEqual([62, 70, 82, 90]);
+    expect(packet.TireSurfaceTempMiddleFL).toBe(61);
+    expect(packet.TireSurfaceTempMiddleRR).toBeUndefined();
+    expect(value("tire.temperature.surface.middle")).toBeNull();
+    expect(value("tire.temperature.surface.outer")).toEqual([60, 72, 80, 92]);
     expect(value("tire.temperature.surface.representative")).toBeNull();
+  });
+
+  test("preserves the parser output of previously recorded RaceRoom frames", () => {
+    const frame = encodeRaceRoomFrame(drivingSnapshot(), 123456, 1);
+    frame.write("R3E6", 0, "ascii");
+    const packet = parseRaceRoomFrame(frame)!;
+    expect(packet.TireSurfaceTempInnerFL).toBeUndefined();
+    expect(packet.TireSurfaceTempOuterRR).toBeUndefined();
+    expect(packet.Speed).toBe(50);
   });
 });

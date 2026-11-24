@@ -24,6 +24,11 @@ export const raceroomAdapter: GameAdapter = {
   telemetry: {
     fuel: { packetUnit: "litre", binding: { kind: "value", semanticId: "fuel.fuel" } },
     tireTemperature: { packetUnit: "celsius" },
+    tireSurfaceProfile: {
+      source: "direct",
+      freshness: "continuous",
+      binding: { kind: "group", required: ["tire.temperature.surface.inner", "tire.temperature.surface.middle", "tire.temperature.surface.outer"] },
+    },
     brakeTemperature: { packetUnit: "celsius", binding: { kind: "value", semanticId: "brakes.brake-temp" } },
     tirePressure: { packetUnit: "psi", binding: { kind: "value", semanticId: "tires.tire-pressure" } },
     clutch: { source: "direct", freshness: "continuous", binding: { kind: "value", semanticId: "inputs.clutch" } },
