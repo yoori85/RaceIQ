@@ -6,7 +6,7 @@
     "generator": {
       "name": "RaceIQ telemetry-catalog generator",
       "version": "0.23.0",
-      "sourceHash": "4d4437a77ba0d951c3f0d7bf02803d89ed9ef7905c568e0dfb99e126f0db9900"
+      "sourceHash": "0ca35906730b7c047d5ca2d2a467c4fabeb61ac616fcca71722cd07fefab2fda"
     },
     "sourceHashes": {
       "packages/capture-formats/src/lmu/opponent-snapshot.ts": "c18e10f39668501f9c4742bec8999bc7faeeba2c8ea7b42d60accfbbe4e8f0c6",
@@ -18,12 +18,12 @@
       "packages/game-iracing-metadata/src/session-info/catalog.ts": "4d39b51587bf71a519991ff91a7781efd01190cd633c8e8ef3f4234fa6affb98",
       "packages/game-iracing/src/normalizer.ts": "bcc73bc4805a310f968b9743e6c9c88a688e3216cd28eecc3ee9f6c3d36b0afc",
       "packages/game-lmu/src/normalizer.ts": "dbd68de1aad791136103401c6502893502b2f52559fe3f4388892ee5103e4b8e",
-      "packages/game-raceroom/src/frame.ts": "e6bb28e0cc5930f17e7db95df6db71fcac56fe9c03af8e3a26296df9a04348f0",
+      "packages/game-raceroom/src/frame.ts": "51d50b7cdf162d9b1c620a5d7c656266c0334b77f7ee55e96bc251ab4ae2ce0a",
       "packages/tooling-catalog/src/catalog/derived-projections.ts": "87ce35e5a8ee19a1bebc21abe8a54705519f7ee9dfd853b1b01e6e187560dfba",
       "server/session-capture/frame-time.ts": "55c44a6cede5e2c5fb1e1c45568fe44b4a9a8b156f260f69bb5d89f9c24935a2",
       "shared/racing/setups/schema.ts": "987941bb8f38520920686ef540e67ce2259fdc962de03ccb959f6b5ef773b28f"
     },
-    "contentHash": "75c69752054153cb2ba9161f3adfb2d2ad534d273df309df4d8fa2055644c38a"
+    "contentHash": "0657edfcef91cfe1ea2b3f92f094570e119e2f7c7cd47e3b5a92c6f0e5fb0673"
   },
   "generatedFrom": [
     "packages/tooling-catalog/src/root.ts",
@@ -55664,9 +55664,29 @@
           }
         },
         "raceroom": {
-          "kind": "unavailable",
-          "reason": "parser-placeholder",
-          "description": "raceroom parser fills this value with a placeholder because source does not provide it."
+          "kind": "direct",
+          "nativeUnit": "m",
+          "sources": {
+            "FL": [
+              "RaceRoom.SharedMemory.player.suspensionDeflection.FL"
+            ],
+            "FR": [
+              "RaceRoom.SharedMemory.player.suspensionDeflection.FR"
+            ],
+            "RL": [
+              "RaceRoom.SharedMemory.player.suspensionDeflection.RL"
+            ],
+            "RR": [
+              "RaceRoom.SharedMemory.player.suspensionDeflection.RR"
+            ]
+          },
+          "freshness": "continuous",
+          "description": "raceroom maps 4 native source channels into this value.",
+          "provenance": {
+            "origin": "parser",
+            "artifact": "packages/game-raceroom/src/frame.ts"
+          },
+          "limitations": []
         }
       },
       "valueType": "number",

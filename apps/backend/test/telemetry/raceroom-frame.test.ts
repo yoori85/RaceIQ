@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { encodeRaceRoomFrame, isRaceRoomSessionEnd, parseRaceRoomFrame, R3E, RACEROOM_PREFIX_BYTES } from "@raceiq/game-raceroom/frame";
 import { LiveTelemetryProjector } from "@raceiq/telemetry-core/telemetry/live-projector";
+import { normalizeTelemetryPacket } from "@raceiq/telemetry-core/telemetry/normalization";
+import { raceroomServerAdapter } from "@raceiq/game-raceroom";
+import { analyseSemanticIds } from "@raceiq/shared/games/metric-contracts";
 
 function drivingSnapshot() {
   const memory = Buffer.alloc(RACEROOM_PREFIX_BYTES);
@@ -25,6 +28,9 @@ function drivingSnapshot() {
   memory.writeFloatLE(24, R3E.fuel);
   memory.writeFloatLE(101, R3E.lastLap);
   memory.writeFloatLE(-1, R3E.tirePressure);
+  for (const [index, value] of [0.018, -0.009, 0, 0.065].entries()) {
+    memory.writeDoubleLE(value, R3E.suspensionDeflection + index * 8);
+  }
   for (const [index, value] of [60, 61, 62, 70, 71, 72, 80, 81, 82, 90, -1, 92].entries()) {
     memory.writeFloatLE(value, R3E.tireTemperature + Math.floor(index / 3) * 24 + (index % 3) * 4);
   }
@@ -64,6 +70,7 @@ describe("RaceRoom 3.6 source frames", () => {
   test("projects native measurements and leaves unsupported dashboard values empty", () => {
     const time = 123456;
     const packet = parseRaceRoomFrame(encodeRaceRoomFrame(drivingSnapshot(), time, 1))!;
+    normalizeTelemetryPacket(packet, false, raceroomServerAdapter.runtime.normSuspensionTravelMm);
     const { schema, frame } = new LiveTelemetryProjector().project({ packet, receivedAtMs: time });
     const value = (id: string) => frame?.values[schema!.definitions.findIndex(item => item.semanticId === id)];
 
@@ -78,6 +85,10 @@ describe("RaceRoom 3.6 source frames", () => {
     expect(value("tire.temperature.surface.middle")).toBeNull();
     expect(value("tire.temperature.surface.outer")).toEqual([60, 72, 80, 92]);
     expect(value("tire.temperature.surface.representative")).toBeNull();
+    expect(value("suspension.suspension-travel-m")).toEqual([0.018, -0.009, 0, 0.065]);
+    expect(value("suspension.norm-suspension-travel")).toBeNull();
+    expect(packet.NormSuspensionTravelFL).toBe(0);
+    expect(analyseSemanticIds(raceroomServerAdapter)).toContain("suspension.suspension-travel-m");
   });
 
   test("preserves the parser output of previously recorded RaceRoom frames", () => {
@@ -87,5 +98,22 @@ describe("RaceRoom 3.6 source frames", () => {
     expect(packet.TireSurfaceTempInnerFL).toBeUndefined();
     expect(packet.TireSurfaceTempOuterRR).toBeUndefined();
     expect(packet.Speed).toBe(50);
+  });
+
+  test("keeps suspension unavailable for older or non-finite source snapshots", () => {
+    const time = 123456;
+    const memory = drivingSnapshot();
+    const treadFrame = encodeRaceRoomFrame(memory, time, 1);
+    treadFrame.write("R3ET", 0, "ascii");
+    expect(parseRaceRoomFrame(treadFrame)?.TireSurfaceTempInnerFL).toBe(62);
+    memory.writeDoubleLE(Number.NaN, R3E.suspensionDeflection + 8);
+    const invalidFrame = encodeRaceRoomFrame(memory, time, 1);
+    for (const source of [treadFrame, invalidFrame]) {
+      const packet = parseRaceRoomFrame(source)!;
+      const { schema, frame } = new LiveTelemetryProjector().project({ packet, receivedAtMs: time });
+      const slot = schema!.definitions.findIndex(item => item.semanticId === "suspension.suspension-travel-m");
+      expect(frame?.values[slot]).toBeNull();
+      expect(packet.raceroom?.suspensionTravelAvailable).toBeUndefined();
+    }
   });
 });

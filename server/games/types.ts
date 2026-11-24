@@ -20,11 +20,11 @@ export interface ServerGameRuntimePolicy {
   /** Collect source positions for track-outline coordinate calibration. */
   requiresTrackCalibration: boolean;
 
-  /** Millimeter travel range for derived suspension normalization fallback. */
+  /** Millimeter travel range for derived suspension normalization fallback. Null disables the fallback. */
   normSuspensionTravelMm: {
     min: number;
     max: number;
-  };
+  } | null;
 }
 
 /** Server-only extensions for game adapters — parsing, AI prompts. */

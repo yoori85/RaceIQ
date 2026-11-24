@@ -5,10 +5,12 @@ import type { TelemetryPacket } from "@raceiq/shared/telemetry/types";
 export const RACEROOM_PREFIX_BYTES = 1920;
 const HEADER_BYTES = 16;
 const LEGACY_MAGIC = 0x36453352; // R3E6
-const MAGIC = 0x54453352; // R3ET
+const TREAD_MAGIC = 0x54453352; // R3ET
+const MAGIC = 0x53453352; // R3ES
 export const R3E = {
   paused: 20, menus: 24, replay: 28, garage: 36, ticks: 44, position: 56,
   localVelocity: 104, localAngularVelocity: 272, localGForce: 296, torque: 336,
+  suspensionDeflection: 392,
   trackName: 600, layoutName: 664, layoutId: 732, layoutLength: 736,
   eventIndex: 776, sessionType: 780, sessionIteration: 784, inPitlane: 848,
   racePosition: 988, completedLaps: 1028, lapValid: 1032, lapDistance: 1040,
@@ -36,7 +38,7 @@ export function encodeRaceRoomFrame(memory: Buffer, time: number, epoch: number)
 function frameMemory(frame: Buffer): Buffer | null {
   if (frame.length !== HEADER_BYTES + RACEROOM_PREFIX_BYTES) return null;
   const magic = frame.readUInt32LE(0);
-  if (magic !== MAGIC && magic !== LEGACY_MAGIC) return null;
+  if (magic !== MAGIC && magic !== TREAD_MAGIC && magic !== LEGACY_MAGIC) return null;
   const memory = frame.subarray(HEADER_BYTES);
   return isRaceRoomMemory(memory) ? memory : null;
 }
@@ -61,8 +63,12 @@ export function parseRaceRoomFrame(frame: Buffer): TelemetryPacket | null {
   const pedal = (offset: number) => Math.round(Math.min(1, nonnegative(f(offset))) * 255);
   const optional = (value: number) => Number.isFinite(value) && value >= 0 ? value : undefined;
   // Retain the original parser output for already-recorded R3E6 frames.
-  const hasTreadTemperatures = frame.readUInt32LE(0) === MAGIC;
+  const magic = frame.readUInt32LE(0);
+  const hasTreadTemperatures = magic !== LEGACY_MAGIC;
   const treadTemperature = (offset: number) => hasTreadTemperatures ? optional(f(offset)) : undefined;
+  const suspensionTravelAvailable = magic === MAGIC && [0, 8, 16, 24].every(offset =>
+    Number.isFinite(d(R3E.suspensionDeflection + offset)),
+  );
   const completed = i(R3E.completedLaps);
   const trackLengthM = f(R3E.layoutLength);
   const lapDistanceM = f(R3E.lapDistance);
@@ -89,7 +95,8 @@ export function parseRaceRoomFrame(frame: Buffer): TelemetryPacket | null {
     sessionUID: JSON.stringify([frame.readUInt32LE(4), i(R3E.eventIndex), sessionType, i(R3E.sessionIteration), layout, car]),
     raceroom: { trackName: [trackName, layoutName].filter(Boolean).join(" – "), trackLengthM, lapDistanceM,
       sessionType: ["practice", "qualifying", "race", "warmup"][sessionType]!,
-      lapInvalidated: i(R3E.lapValid) === 0, inPits: i(R3E.inPitlane) === 1 },
+      lapInvalidated: i(R3E.lapValid) === 0, inPits: i(R3E.inPitlane) === 1,
+      ...(suspensionTravelAvailable ? { suspensionTravelAvailable: true } : {}) },
     IsRaceOn: 1, TimestampMS: time,
     EngineMaxRpm: nonnegative(f(R3E.maxEngineRadians)) * 30 / Math.PI,
     EngineIdleRpm: 0, CurrentEngineRpm: nonnegative(f(R3E.engineRadians)) * 30 / Math.PI,
@@ -138,7 +145,10 @@ export function parseRaceRoomFrame(frame: Buffer): TelemetryPacket | null {
     SurfaceRumbleFL: 0, SurfaceRumbleFR: 0, SurfaceRumbleRL: 0, SurfaceRumbleRR: 0,
     TireSlipAngleFL: 0, TireSlipAngleFR: 0, TireSlipAngleRL: 0, TireSlipAngleRR: 0,
     TireCombinedSlipFL: 0, TireCombinedSlipFR: 0, TireCombinedSlipRL: 0, TireCombinedSlipRR: 0,
-    SuspensionTravelMFL: 0, SuspensionTravelMFR: 0, SuspensionTravelMRL: 0, SuspensionTravelMRR: 0,
+    SuspensionTravelMFL: suspensionTravelAvailable ? d(R3E.suspensionDeflection) : 0,
+    SuspensionTravelMFR: suspensionTravelAvailable ? d(R3E.suspensionDeflection + 8) : 0,
+    SuspensionTravelMRL: suspensionTravelAvailable ? d(R3E.suspensionDeflection + 16) : 0,
+    SuspensionTravelMRR: suspensionTravelAvailable ? d(R3E.suspensionDeflection + 24) : 0,
     CarClass: Math.max(0, i(R3E.classId)), CarPerformanceIndex: 0, DrivetrainType: 0, NumCylinders: 0,
     PositionX: finite(d(R3E.position)), PositionY: finite(d(R3E.position + 8)), PositionZ: finite(d(R3E.position + 16)),
     Speed: f(R3E.speed), Power: 0, Torque: finite(d(R3E.torque)),

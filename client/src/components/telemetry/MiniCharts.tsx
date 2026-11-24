@@ -53,8 +53,10 @@ export function FourLineChart({
     const allVals = arrays.flat();
     if (allVals.length === 0) return;
 
-    const computedMax = maxY ?? (Math.max(...allVals) * 1.1 || 1);
-    const computedMin = maxY != null ? 0 : Math.min(...allVals) * 0.9;
+    const highest = Math.max(...allVals);
+    const lowest = Math.min(...allVals);
+    const computedMax = maxY ?? ((highest + Math.abs(highest) * 0.1) || 1);
+    const computedMin = maxY != null ? 0 : lowest - Math.abs(lowest) * 0.1;
     const yRange = computedMax - computedMin || 1;
     const maxLen = GRIP_MAX_SAMPLES;
 

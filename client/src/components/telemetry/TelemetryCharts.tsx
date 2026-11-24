@@ -27,6 +27,8 @@ export function TelemetryCharts({ view }: { view: LiveTelemetryView }) {
   const showSlipAngle = analysis.slipAngle.source !== "unavailable";
   const showSlipRatio = analysis.slipRatio.source !== "unavailable";
   const showNormalizedSuspension = analysis.suspensionTravel.source !== "unavailable" && analysis.suspensionTravel.display !== "millimeters";
+  const showMillimeterSuspension = analysis.suspensionTravel.source !== "unavailable" &&
+    analysis.suspensionTravel.display === "millimeters" && view.tires.suspensionTravelM !== undefined;
   const histRef = useRef({
     grip: { fl: [] as number[], fr: [] as number[], rl: [] as number[], rr: [] as number[] },
     temp: { fl: [] as number[], fr: [] as number[], rl: [] as number[], rr: [] as number[] },
@@ -71,9 +73,10 @@ export function TelemetryCharts({ view }: { view: LiveTelemetryView }) {
         "tires.wheel-rotation-speed": asArray(view.tires.rotationRadS),
         "tires.tire-radius": asArray(view.tires.radiusM),
         "suspension.norm-suspension-travel": asArray(view.tires.suspensionNormalized),
+        "suspension.suspension-travel-m": asArray(view.tires.suspensionTravelM),
       },
     };
-    const metricValues = (key: "combinedSlip" | "temperatureC" | "wear" | "slipAngleRad" | "slipRatio" | "suspensionNormalized") => {
+    const metricValues = (key: "combinedSlip" | "temperatureC" | "wear" | "slipAngleRad" | "slipRatio" | "suspension") => {
       const metric =
         key === "combinedSlip"
           ? analysis.gripDemand
@@ -113,7 +116,7 @@ export function TelemetryCharts({ view }: { view: LiveTelemetryView }) {
     appendWheel(history.wear, metricValues("wear"), (value) => value);
     appendWheel(history.slipAngle, metricValues("slipAngleRad"), (value) => value * (180 / Math.PI));
     appendWheel(history.slipRatio, metricValues("slipRatio"), Math.abs);
-    appendWheel(history.suspension, metricValues("suspensionNormalized"), (value) => value);
+    appendWheel(history.suspension, metricValues("suspension"), (value) => showMillimeterSuspension ? value * 1000 : value);
     if (view.inputs.throttle !== undefined) history.throttle.push(controlInputPercent(view.inputs.throttle));
     if (view.inputs.brake !== undefined) history.brake.push(controlInputPercent(view.inputs.brake));
     if (view.motion.speedMps !== undefined) history.speed.push(units.speed(view.motion.speedMps));
@@ -121,7 +124,7 @@ export function TelemetryCharts({ view }: { view: LiveTelemetryView }) {
       if (series.length > GRIP_MAX_SAMPLES) series.shift();
     }
     setChartData({ ...history });
-  }, [analysis, units, view]);
+  }, [analysis, showMillimeterSuspension, units, view]);
 
   return (
     <div className="grid gap-2">
@@ -132,6 +135,7 @@ export function TelemetryCharts({ view }: { view: LiveTelemetryView }) {
       {showSlipAngle && <FourLineChart data={chartData.slipAngle} label={`${m.chart_slip_angle()} (°)`} />}
       {showSlipRatio && <FourLineChart data={chartData.slipRatio} label={m.chart_slip_ratio()} />}
       {showNormalizedSuspension && <FourLineChart data={chartData.suspension} label={m.chart_suspension()} maxY={1} />}
+      {showMillimeterSuspension && <FourLineChart data={chartData.suspension} label={`${m.chart_suspension()} (mm)`} />}
       <SingleLineChart data={chartData.speed} label={m.chart_speed({ unit: units.speedLabel })} color="var(--app-accent)" />
       <DualLineChart data1={chartData.throttle} data2={chartData.brake} label1={`${m.chart_throttle()} (%)`} label2={`${m.chart_brake()} (%)`} color1="var(--ch-throttle)" color2="var(--ch-brake)" label={m.chart_throttle_brake()} maxY={100} />
     </div>

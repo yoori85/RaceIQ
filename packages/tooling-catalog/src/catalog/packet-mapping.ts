@@ -68,6 +68,10 @@ const PACKET_SOURCE_OVERRIDES: Partial<
 > = {
   ams2: AMS2_PACKET_SOURCES,
   raceroom: {
+    SuspensionTravelMFL: ["RaceRoom.SharedMemory.player.suspensionDeflection.FL"],
+    SuspensionTravelMFR: ["RaceRoom.SharedMemory.player.suspensionDeflection.FR"],
+    SuspensionTravelMRL: ["RaceRoom.SharedMemory.player.suspensionDeflection.RL"],
+    SuspensionTravelMRR: ["RaceRoom.SharedMemory.player.suspensionDeflection.RR"],
     IsRaceOn: ["RaceRoom.SharedMemory.paused", "RaceRoom.SharedMemory.menus", "RaceRoom.SharedMemory.replay", "RaceRoom.SharedMemory.garage", "RaceRoom.SharedMemory.controlType"],
     TimestampMS: ["RaceIQ.SystemClock"],
     sessionUID: ["RaceIQ.SourceEpoch", "RaceRoom.SharedMemory.eventIndex", "RaceRoom.SharedMemory.sessionType", "RaceRoom.SharedMemory.sessionIteration", "RaceRoom.SharedMemory.layoutId", "RaceRoom.SharedMemory.modelId"],
@@ -624,7 +628,7 @@ function classifyPacketMapping(
   native: { normalization?: string },
   expressions: readonly string[],
 ): AvailableLink["kind"] {
-  if (gameId === "raceroom" && key.startsWith("TireSurfaceTemp")) return "direct";
+  if (gameId === "raceroom" && (key.startsWith("TireSurfaceTemp") || key === "SuspensionTravelM")) return "direct";
   if (
     (gameId === "acc" && key === "WeatherType") ||
     (gameId === "f1-2025" && key === "WheelRotationSpeed")

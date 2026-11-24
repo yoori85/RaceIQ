@@ -15,7 +15,7 @@ export const raceroomServerAdapter: ServerGameAdapter = {
     pit: { seedFuelFromHistory: true, seedTireWearFromHistory: false, useDistanceBasedWearCurves: false },
     bestLapFromSession: false,
     requiresTrackCalibration: false,
-    normSuspensionTravelMm: { min: 0, max: 100 },
+    normSuspensionTravelMm: null,
   },
   createLapDetector: options => new LapDetector({
     ...options,

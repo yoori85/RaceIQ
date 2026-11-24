@@ -128,6 +128,7 @@ export function readerFor(variable: TelemetryVariableDefinition, mapping: Exclud
   const ordering = keyedCollection ? (variable.ordering ?? Object.keys(keyedSources)) : undefined;
   const normalizedLateralSlip = variable.id === "tires.normalized-tire-slip-angle";
   if ((fields && fields.length > 1) || keyedCollection) {
+    const suspensionTravel = variable.id === "suspension.suspension-travel-m";
     const count = normalizedLateralSlip ? 4 : Math.max(fields?.length ?? 0, ordering?.length ?? 0);
     const values = new Array<unknown>(count);
     const reading = {} as SourceReading;
@@ -137,6 +138,9 @@ export function readerFor(variable: TelemetryVariableDefinition, mapping: Exclud
           .flat()
           .join("|");
     return (frame, context) => {
+      // The source flag distinguishes measured zero from the legacy RaceRoom placeholder.
+      if (suspensionTravel && packetField(frame, "gameId") === "raceroom" &&
+          readCollectionPath(packetField(frame, "raceroom"), ["suspensionTravelAvailable"]) !== true) return undefined;
       let available = 0;
       let firstSource = "";
       for (let index = 0; index < count; index += 1) {

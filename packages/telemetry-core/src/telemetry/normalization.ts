@@ -6,7 +6,7 @@ import type { TelemetryPacket } from "@raceiq/shared/telemetry/types";
 export function normalizeTelemetryPacket(
   packet: TelemetryPacket,
   standardXyz: boolean,
-  suspensionRange?: SuspensionTravelRangeMm,
+  suspensionRange?: SuspensionTravelRangeMm | null,
 ): void {
   if (standardXyz) {
     packet.PositionX = -packet.PositionX;
@@ -33,9 +33,9 @@ function normalizeSuspensionTravel(value: number, min: number, span: number): nu
 
 export function fillNormSuspension(
   packet: TelemetryPacket,
-  range: SuspensionTravelRangeMm = DEFAULT_SUSPENSION_RANGE_MM,
+  range: SuspensionTravelRangeMm | null = DEFAULT_SUSPENSION_RANGE_MM,
 ): void {
-  if (packet.NormSuspensionTravelFL !== 0 || packet.SuspensionTravelMFL <= 0) return;
+  if (range === null || packet.NormSuspensionTravelFL !== 0 || packet.SuspensionTravelMFL <= 0) return;
   const { min, max } = range;
   const span = max - min;
   packet.NormSuspensionTravelFL = normalizeSuspensionTravel(
