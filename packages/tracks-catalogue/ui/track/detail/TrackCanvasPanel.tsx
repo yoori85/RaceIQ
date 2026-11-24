@@ -1,4 +1,4 @@
-import type { Dispatch, MutableRefObject, RefObject, SetStateAction } from "react";
+import { useState, type Dispatch, type MutableRefObject, type RefObject, type SetStateAction } from "react";
 import { useTracksCatalogueHost } from "../../host";
 import type { Point, TrackInfo, TrackSectors } from "../../../contracts/types";
 import { InlineTrackMap } from "../InlineTrackMap";
@@ -23,8 +23,11 @@ interface TrackCanvasPanelProps {
 }
 
 export function TrackCanvasPanel(props: TrackCanvasPanelProps) {
-  const { Button, m, parseUtcTimestamp } = useTracksCatalogueHost();
+  const { Button, m, parseUtcTimestamp, useGameId } = useTracksCatalogueHost();
   const { track, outline, canvasRef, dragging, pan, setPan, zoom, setZoom, sectorBounds, displaySectors, mapDisplayMode, setMapDisplayMode, corners, straights } = props;
+  const gameId = useGameId();
+  const [failedMap, setFailedMap] = useState<string | null>(null);
+  const mapUrl = track.mapUrl && track.mapUrl !== failedMap ? track.mapUrl : null;
   return (
     <div className="relative h-[260px] min-w-0 shrink-0 rounded-lg border border-app-border bg-app-bg @3xl/workspace:min-h-0 @3xl/workspace:h-auto @3xl/workspace:flex-1">
       {outline ? (
@@ -47,8 +50,14 @@ export function TrackCanvasPanel(props: TrackCanvasPanelProps) {
             dragging.current = null;
           }}
         />
-      ) : track.mapUrl ? (
-        track.mapUrl.startsWith("/api/lmu-assets/") ? <InlineTrackMap src={track.mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })} className="h-full w-full p-5" /> : <img src={track.mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })} className="w-full h-full object-contain p-5" />
+      ) : mapUrl ? (
+        mapUrl.startsWith("/api/lmu-assets/") ? (
+          <InlineTrackMap src={mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })} className="h-full w-full p-5" />
+        ) : (
+          <img key={mapUrl} src={mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })}
+            className={`w-full h-full object-contain p-5 ${gameId === "raceroom" ? "dark:invert" : ""}`}
+            decoding="async" onError={() => setFailedMap(mapUrl)} />
+        )
       ) : (
         <div className="flex items-center justify-center h-full text-app-subtext text-app-text-dim">{m.trackdetail_no_outline_available()}</div>
       )}

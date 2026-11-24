@@ -4,7 +4,7 @@ import type { LocalGameCatalog } from "@raceiq/backend-core/games/types";
 
 const APP_MANIFEST = "appmanifest_211500.acf";
 const CATALOG_FILE = ["Game", "GameData", "General", "r3e-data.json"];
-const LIVERY_CDN = "https://game.raceroomracing.com/cdn/apex-production";
+const RACEROOM_CDN = "https://game.raceroomracing.com/cdn/apex-production";
 const TRACK_CDN = "https://fra1.digitaloceanspaces.com/apex-production";
 
 function record(value: unknown): Record<string, unknown> | undefined {
@@ -36,7 +36,7 @@ export function parseRaceRoomCatalog(contents: string): LocalGameCatalog {
     const defaultLivery = id(entry.DefaultLivery);
     const livery = defaultLivery ? record(liveries?.[defaultLivery]) : undefined;
     const imageUrl = defaultLivery && id(livery?.Car) === carId
-      ? `${LIVERY_CDN}/Livery:${defaultLivery}:small.webp`
+      ? `${RACEROOM_CDN}/Livery:${defaultLivery}:small.webp`
       : undefined;
     return [carId, { id: carId, name, category: classes.get(id(entry.Class) ?? "") ?? "", imageUrl }] as const;
   }));
@@ -49,6 +49,7 @@ export function parseRaceRoomCatalog(contents: string): LocalGameCatalog {
       name: name === circuit ? circuit : `${circuit} – ${name}`,
       variant: name,
       imageUrl: `${TRACK_CDN}/Track:${circuitId}:image_1.webp`,
+      mapUrl: `${RACEROOM_CDN}/TrackLayout:${layoutId}:map.svg`,
     }] as const];
   }));
   return { cars, tracks };

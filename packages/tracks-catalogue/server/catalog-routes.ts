@@ -104,7 +104,7 @@ export const trackCatalogRoutes = new Hono()
           return {
             ...track, location: "", country: "",
             lengthKm: (getTrackLengthMetersById(track.id, gameId) ?? 0) / 1000,
-            hasOutline, outlineSource: hasOutline ? "generated" : null,
+            hasOutline, hasMap: hasOutline || !!track.mapUrl, outlineSource: hasOutline ? "generated" : null,
             createdAt: null, lapCount: lapCounts.get(track.id) ?? 0,
           };
         }).sort((left, right) => left.name.localeCompare(right.name)));

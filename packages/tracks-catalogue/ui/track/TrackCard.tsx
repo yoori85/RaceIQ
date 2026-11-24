@@ -78,7 +78,7 @@ export function TrackCardVisual({ track, map, setupCount, guideCount, gameLabel 
   );
 }
 
-/** TrackCard shows circuit artwork and falls back to the available track map. */
+/** TrackCard shows a layout map when available, with circuit artwork as a fallback. */
 export function TrackCard({
   track,
   onSelect,
@@ -100,8 +100,13 @@ export function TrackCard({
   const [pitLines, setPitLines] = useState<PitLine[]>([]);
   const [flipX, setFlipX] = useState(false);
   const [failedImage, setFailedImage] = useState<string | null>(null);
+  const [failedMap, setFailedMap] = useState<string | null>(null);
   const imageUrl = track.imageUrl && track.imageUrl !== failedImage ? track.imageUrl : null;
-  const loadOutline = track.hasOutline && !imageUrl;
+  const mapUrl = track.mapUrl && track.mapUrl !== failedMap ? track.mapUrl : null;
+  const isRaceroom = gameId === "raceroom";
+  const preferLayoutMap = isRaceroom && !!mapUrl;
+  const previewImageUrl = isRaceroom && (mapUrl || outline) ? null : imageUrl;
+  const loadOutline = track.hasOutline && (isRaceroom ? !mapUrl : !imageUrl);
 
   useEffect(() => {
     if (!loadOutline || !cardRef.current) return;
@@ -132,14 +137,20 @@ export function TrackCard({
   useEffect(() => {
     if (!outline || !canvasRef.current) return;
     drawTrack(canvasRef.current, outline, false, null, 1, { x: 0, z: 0 }, undefined, flipX, undefined, undefined, undefined, undefined, pitLines);
-  }, [outline, flipX, pitLines, imageUrl]);
+  }, [outline, flipX, pitLines, preferLayoutMap, previewImageUrl]);
 
-  const preview = imageUrl ? (
-    <img key={imageUrl} src={imageUrl} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" onError={() => setFailedImage(imageUrl)} />
-  ) : outline ? (
+  const preview = previewImageUrl ? (
+    <img key={previewImageUrl} src={previewImageUrl} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" onError={() => setFailedImage(previewImageUrl)} />
+  ) : outline && !preferLayoutMap ? (
     <canvas ref={canvasRef} className="w-full h-full" />
-  ) : track.mapUrl ? (
-    gameId === "lmu" ? <InlineTrackMap src={track.mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })} className="w-full h-full p-3" /> : <img src={track.mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })} className="w-full h-full object-contain p-3" loading="lazy" decoding="async" />
+  ) : mapUrl ? (
+    gameId === "lmu" ? (
+      <InlineTrackMap src={mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })} className="w-full h-full p-3" />
+    ) : (
+      <img key={mapUrl} src={mapUrl} alt={m.trackdetail_map_alt({ track: track.name, variant: track.variant })}
+        className={`w-full h-full object-contain p-3 ${isRaceroom ? "dark:invert" : ""}`}
+        loading="lazy" decoding="async" onError={() => setFailedMap(mapUrl)} />
+    )
   ) : undefined;
 
   return (
